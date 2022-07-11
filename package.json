@@ -1,0 +1,28 @@
+{
+  "name": "@butterwell/find-circle-center",
+  "version": "0.0.1",
+  "description": "Given 3 or more points, find the center that fits the points best",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "geometry",
+    "aproximation"
+  ],
+  "author": "Christopher Michael Buck",
+  "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Butterwell/find-circle-center.git"
+  },
+  "homepage": "https://github.io/Butterwell/find-circle_center",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+  }
+}

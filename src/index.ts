@@ -8,6 +8,44 @@ interface Circle {
   radius: number;
 }
 
+function onRight(points: Array<Point>, center: Point) {
+  let a = points[0]
+  let b = points[2]
+  let c = center
+
+  if (Math.abs(a.x - b.x) < Number.EPSILON*64 ) {
+      if (c.x < b.x) {
+          return b.y > a.y ? 1 : -1;
+      }
+      if (c.x > b.x) {
+          return b.y > a.y ? -1 : 1;
+      } 
+      return 0;
+  }
+  if (Math.abs(a.y - b.y) < Number.EPSILON*64) { // horizontal line
+      if (c.y < b.y) {
+          return b.x > a.x ? -1 : 1;
+      }
+      if (c.y > b.y) {
+          return b.x > a.x ? 1 : -1;
+      } 
+      return 0;
+  }
+  let slope = (b.y - a.y) / (b.x - a.x);
+  let yIntercept = a.y - a.x * slope;
+  let cSolution = (slope*c.x) + yIntercept;
+  if (slope != 0) {
+      if (c.y > cSolution) {
+          return b.x > a.x ? 1 : -1;
+      }
+      if (c.y < cSolution) {
+          return b.x > a.x ? -1 : 1;
+      }
+      return 0;
+  }
+  return 0;
+}
+
 const nudge = Math.pow(2, -46);
 
 export function simpleCenter(points: Array<Point>): Circle {
@@ -34,7 +72,11 @@ export function simpleCenter(points: Array<Point>): Circle {
   const center = {x, y}
   const rx = p1.x - x
   const ry = p1.y - y
-  const radius = Math.sqrt(rx * rx + ry * ry)
+  const magnitude = Math.sqrt(rx * rx + ry * ry)
+
+  const sign = onRight(points, center)
+  
+  const radius = sign >= 0 ? -magnitude : magnitude
 
   return { center, radius }
 }
@@ -66,14 +108,14 @@ export function circleCenter(points: Array<Point>) {
   // Step 2. // TODO use non-euclidian distance function: try  Math.abs(p.x-a.center.x) + Math.abs(p.y-a.center.y)
   let distances = points.map((p) => Math.sqrt((p.x-center.x)**2 + (p.y-center.y)**2))
   // median: sum/number of points
-  let radius = (distances.reduce((prev, curr) => prev + curr, 0))/points.length
+  let magnitude = (distances.reduce((prev, curr) => prev + curr, 0))/points.length
   // Starting error
-  let error = calcError(distances, radius)
+  let error = calcError(distances, magnitude)
 
   let iterations: number = 0
   do {
     // Step 3. Calculate set indexes
-    let [i, o, c] = iocSets(distances, radius)
+    let [i, o, c] = iocSets(distances, magnitude)
     // Step 4.
     let coses = distances.map((distance, index) => {
         let x = points[index].x
@@ -124,10 +166,15 @@ export function circleCenter(points: Array<Point>) {
     }
     center = {x, y}
     distances = distancesNew
-    radius = radiusNew
+    magnitude = radiusNew
     error = errorNew
     iterations += 1
   } while (iterations < 3)
+
+  const sign = onRight(points, center)
+  
+  const radius = sign >= 0 ? -magnitude : magnitude
+
 
   return {center, radius}
 }

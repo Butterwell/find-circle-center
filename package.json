@@ -1,6 +1,6 @@
 {
   "name": "@butterwell/find-circle-center",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Given 3 or more points, find the center that fits the points best",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
